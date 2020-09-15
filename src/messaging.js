@@ -9,10 +9,13 @@ var decks = [];
 var acceptCards = false;
 var blackType;
 
+var skipi = true;
+
 window.onload = function() {
     socket.emit('new player');
-    nickname = prompt("Please enter your nickname");
-    socket.emit('updateName', nickname);
+    checkCookie();
+    /*nickname = prompt("Please enter your nickname");
+    socket.emit('updateName', nickname);*/
     //console.log(nickname);
 };
 
@@ -36,6 +39,18 @@ function updateScroll(){
     var element = document.getElementById("chatLog");
     element.scrollTop = element.scrollHeight;
 }
+
+
+function setCookie(cname, cvalue, exdays) {
+  var d = new Date();
+  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+  var expires = "expires="+d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+socket.on('sessionId', function(id) {
+  setCookie("session", id, 1);
+//  console.log("session", id);
+});
 
 function startGame(){
   //document.getElementById("startButton").disabled=true;
@@ -85,6 +100,16 @@ socket.on('sessionid', function(id){
 function setPoints(){
   let number = document.getElementById("pointsInput").value;
   socket.emit('setPoints', number);
+}
+function skip(){
+  if (!skipi) return;
+  skipi=false;
+  socket.emit('skipBlack');
+  //document.getElementById("skipButton").disabled=true;
+  setTimeout(function(){
+      skipi=true;
+      //document.getElementById("skipButton").disabled=false;
+  }, 30000)
 }
 function setDecks(){
   //console.log("decks")
@@ -211,7 +236,7 @@ socket.on('playedCards', function(playedCards, type) {
 });
 socket.on('playedCardsHidden', function() {
     let msg = document.createElement("div");
-    msg.className="biggerCard";
+    msg.className="biggerCard hidden";
 
     document.getElementById("cards").appendChild(msg);
 });
@@ -432,4 +457,34 @@ function updateWhite(){
        }
        document.getElementById("yourCards").appendChild(msg);
      }
+}
+
+function getCookie(cname) {
+  var name = cname + "=";
+  var ca = document.cookie.split(';');
+  for(var i = 0; i < ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+function checkCookie() {
+  var username = getCookie("username");
+  if (username != "") {
+   //alert("Welcome again " + username);
+   socket.emit('updateName', username);
+   nickname = username;
+  } else {
+    username = prompt("Please enter your nickname", "");
+    socket.emit('updateName', username);
+    if (username != "" && username != null && username!=undefined) {
+        setCookie("username", username, 1);
+    }
+  }
 }

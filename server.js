@@ -7,13 +7,13 @@ var socketIO = require('socket.io');
 var app = express();
 var server = http.Server(app);
 var io = socketIO(server);
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4001;
 
-var cards = require('./static/cards.js');
+var cards = require('./src/cards.js');
 //var events = require('./static/events.js');
 
 app.set('port', port);
-app.use('/static', express.static(__dirname + '/static'));
+app.use('/src', express.static(__dirname + '/src'));
 
 // Routing
 app.get('/', function(request, response) {
@@ -61,6 +61,8 @@ var mostpickedcards = [];
 
 var decks = false;
 var pressed = false;
+
+var blackSkip = 0;
 
 //import { fetchWhite, fetchBlack } from './cards.mjs';
 
@@ -204,7 +206,7 @@ io.on('connection', (client) => {
         }
   });
   client.on('updateName', function(nickname) {
-      if (players[client.id]!=undefined) players[client.id].name = nickname;
+      if (players[client.id]!=undefined && nickname!="" && nickname!=null && nickname!=undefined) players[client.id].name = nickname;
       console.log("updateName", playerList);
       io.sockets.emit('message', message(nickname, "is in the game"));
       io.sockets.emit('state', playerList, players);
@@ -230,6 +232,16 @@ io.on('connection', (client) => {
       if (cards.white[i].type==2) cards.white[i].text=text;
     }
     io.to(client.id).emit('message', message("server", "Customowa karta ustawiona: "+text));
+  });
+  client.on('skipBlack', function(){
+    if (acceptTzar) return;
+    console.log("black card: ", cards.black[blackQueue[0]]);
+    io.sockets.emit('blackCard', cards.black[blackQueue[0]]);
+    io.sockets.emit('message', message("Black Card", cards.black[blackQueue[0]].text));
+    prevBlack = cards.black[blackQueue[0]];
+    blackQueue.shift();
+    io.sockets.emit('state', playerList, players);
+    blackSkip=0;
   });
   client.on('reroll', function(){
     if(players[client.id].reroll) return;
@@ -272,6 +284,7 @@ io.on('connection', (client) => {
               gameStarted=false;
               decks=false;
               io.sockets.emit('startEnable');
+              io.sockets.emit('pointsEnable');
               winner=true;
             }
     }
@@ -362,6 +375,7 @@ io.on('connection', (client) => {
           pressed=false;
           decks=false;
           io.sockets.emit('startEnable');
+          io.sockets.emit('pointsEnable');
           return;
         }
       }
@@ -382,6 +396,7 @@ io.on('connection', (client) => {
       whitei=0;
       cardsPlayedi=0;
       blacki=0;
+      blackSkip=0;
 
       io.sockets.emit('loadloader');
       if (!decks) {
@@ -391,7 +406,7 @@ io.on('connection', (client) => {
       io.sockets.emit('message', message("server", "Fetching black cards..."))
       await cards.generateBlack();
 
-      let tmp = (whitePerPerson*2)+(noPlayers*winningPoints)+(3*10*noPlayers);
+      let tmp = (whitePerPerson*2)+(noPlayers*winningPoints)+(3*12*noPlayers);
       tmp = tmp * noPlayers;
       tmp = Math.ceil(tmp/cards.white.length);
       for (let i=0;i<tmp;i++){
@@ -453,8 +468,11 @@ io.on('connection', (client) => {
     if (input.sauce=="!stats") {
         io.sockets.emit('message', message("Most picked cards", countCards()));
     }
-    if (input.sauce=="!rudy") {
+    else if (input.sauce=="!rudy") {
         io.sockets.emit('message', message("server", rudy(client.id)));
+    }
+    else if (input.sauce.substring(0,5)=="!kick") {
+        io.sockets.emit('message', message("server", kick(input.sauce.slice(6, input.sauce.length))));
     }
   });
 });
@@ -480,6 +498,7 @@ function setUpTurn(){
         io.sockets.emit('blackCard', cards.black[blackQueue[0]]);
         prevBlack = cards.black[blackQueue[0]];
         blackQueue.shift();
+        blackSkip=0;
 
         acceptCards=true;
         acceptTzar=false;
@@ -496,7 +515,7 @@ function setUpTurn(){
         players[playerList[tzarTag]].pick=false;
         players[playerList[tzarTag]].amountPicked=0;
         io.sockets.emit('state', playerList, players);
-        console.log(players);
+        //console.log(players);
         acceptCards=true;
         io.sockets.emit('enableCards');
         io.sockets.emit('blockTzar', players[playerList[tzarTag]].id);
@@ -606,6 +625,69 @@ function rudy(id){
         return "Kolejny dc? Punkty przywrócone!"
     }
     return "Nie udało się przywrócić punktów :("
+}
+
+function kick(name){
+console.log(name)
+    for (let i in playerList){
+        if (players[playerList[i]].name==name){
+                      // remove commited cards of that person
+                                   for (let id2 in cardsPlayed){
+                                       if (cardsPlayed[id2].player==playerList[i]) {
+                                           cardsPlayed.splice(id2, 1);
+                                           cardsPlayedi--;
+                                       }
+                                   }
+                                emitEmptyWhite();
+                                if (players[playerList[i]].tzar==true) {
+                                // appoint new tzar
+                                    tzarTag++;
+                                    if (tzarTag>=playerList.length) tzarTag=0;
+                                    players[playerList[tzarTag]].tzar=true;
+                                    players[playerList[tzarTag]].pick=false;
+                                    players[playerList[tzarTag]].amountPicked=0;
+                                    if (acceptCards==true) io.sockets.emit('blockTzar', players[playerList[tzarTag]].id);
+                                // remove played cards of new tzar
+                                    for (let id2 in cardsPlayed){
+                                             if (cardsPlayed[id2].player==players[playerList[tzarTag]].id) {
+                                                 cardsPlayed.splice(id2, 1);
+                                                 cardsPlayedi--;
+                                             }
+                                    }
+                                    emitEmptyWhite();
+                                }
+
+                                //console.log(noPlayers, cardsPlayed.length, "sdikjfbnsdihfjswbfiuyshdgbusi");
+                                if ((noPlayers-2<=cardsPlayed.length && prevBlack.type==0) || ((prevBlack.type*(noPlayers-2))<=cardsPlayed.length && (prevBlack.type==2 || prevBlack.type==3))) {
+                                    acceptCards=false;
+                                    acceptTzar=true;
+                                }
+                                if (acceptTzar==true) {
+                                    shufflePlayed();
+                                    players[playerList[tzarTag]].pick=true;
+                                    io.sockets.emit('playedCards', cardsPlayed, prevBlack.type);
+                                    io.sockets.emit('enableCards');
+                                    io.sockets.emit('tzarTurn', players[playerList[tzarTag]]);
+                                }
+
+                                playerList.splice(playerList[i], 1);
+                                noPlayers--;
+
+                                if (tzarTag<0) tzarTag=playerList.length-1;
+                                else if (tzarTag>=noPlayers) tzarTag=0;
+
+                                io.sockets.emit('state', playerList, players);
+                                break;
+        }
+    }
+                        io.sockets.emit('state', playerList, players);
+                        console.log('user kicked', playerList);
+                        if (noPlayers==0) {
+                            pressed=false;
+                            gameStarted=false;
+                            decks=false;
+                        }
+    return name+" has been kicked from the game"
 }
 
 function emitEmptyWhite(){
