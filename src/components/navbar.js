@@ -1,46 +1,57 @@
-import React, { useState, useEffect } from "react";
-import socketIOClient from "socket.io-client";
+import React, { useState, useEffect, useContext } from "react";
 import '../css/main.css';
 
-const ENDPOINT = "http://127.0.0.1:4001";
+import {SocketContext} from '../hooks/Socket.js'
 
-function startGame(){
-    const socket = socketIOClient(ENDPOINT);
+function startGame(socket){
     socket.emit('start');
 }
 
-function setDecks(){
-    const socket = socketIOClient(ENDPOINT);
-    //console.log("decks")
-    let decks = [];
+function setDecks(socket){
+    let decks=[];
     let cat = document.querySelectorAll(".deck");
     for (let i=0;i<cat.length;i++){
-    if (cat[i].checked) decks.push(cat[i].value);
+      if (cat[i].checked) decks.push(cat[i].value);
     }
     socket.emit('setDecks', decks);
 }
 
-function Navbar() {
-const [response, setResponse] = useState("");
+function setPoints(socket){
+    let number = document.getElementById("pointsInput").value;
+    socket.emit('setPoints', number);
+}
+
+function Navbar(props) {
+const [response, setResponse] = useState(false);
+const socket = useContext(SocketContext)
 
   useEffect(() => {
-    const socket = socketIOClient(ENDPOINT);
-    socket.on("FromAPI", data => {
-      setResponse(data);
+    socket.on("startEnable", data => {
+      setResponse(false);
     });
-  }, []);
+    socket.on("startDisable", data => {
+      setResponse(true);
+    });  
+    socket.on('recieveCategories', function(cat){
+      for (let i=0;i<cat.length;i++){
+        let msg = document.createElement("a");
+        msg.innerHTML = "<input type=\"checkbox\" class=\"deck\" value=\""+cat[i].id+"\" checked=\"true\"><label for=\""+cat[i].id+"\">"+cat[i].name+"</label><br>";
+        document.getElementById("catplace").appendChild(msg);
+      }
+    });
+  }, [socket]);
 
   return (
     <div className="navbar" id="player">
-      <button type="button" id="startButton" onClick={startGame()}>START</button>
+      <button type="button" id="startButton" onClick={() => startGame(socket)} disabled={response}>START</button>
       <div className="navbar_points">
           Score limit:
-          <select id="pointsInput">
+          <select id="pointsInput" defaultValue='5'>
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
                 <option value="4">4</option>
-                <option value="5" selected >5</option>
+                <option value="5">5</option>
                 <option value="6">6</option>
                 <option value="7">7</option>
                 <option value="8">8</option>
@@ -48,13 +59,12 @@ const [response, setResponse] = useState("");
                 <option value="10">10</option>
           </select>
           <div>
-            <button type="button" id="pointsButton" onClick="setPoints()">Select</button>
+            <button type="button" id="pointsButton" onClick={() => setPoints(props.socket)} disabled={response}>Select</button>
           </div>
       </div>
       <div className="navbar_decks">
-        <button id="deckButton" onClick={setDecks()}>Decks select</button>
-        <div className="navbar_decks_content" id="catplace">              
-        </div>
+        <button id="deckButton" onClick={() => setDecks(props.socket)} disabled={response}>Decks select</button>
+        <div className="navbar_decks_content" id="catplace"></div>
       </div>
       {response}
     </div>

@@ -40,7 +40,6 @@ function updateScroll(){
     element.scrollTop = element.scrollHeight;
 }
 
-
 function setCookie(cname, cvalue, exdays) {
   var d = new Date();
   d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
@@ -79,11 +78,6 @@ function logKey(e) {
   if(e.keyCode==13) {
     writeMessage();
   }
-}
-
-function updateScroll(){
-    var element = document.getElementById("chatLog");
-    element.scrollTop = element.scrollHeight;
 }
 
 socket.on('sessionid', function(id){

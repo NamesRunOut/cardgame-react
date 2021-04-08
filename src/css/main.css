@@ -165,6 +165,8 @@ button {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
   background-color: #1a1a1a;
   margin-right: 1em;
 }
@@ -782,6 +784,91 @@ button {
   background-color: black;
 }
 
+.wrapper_form {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.form {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  color: #6c757d;
+  background-color: #f8f9fa;
+  border: 1px solid #6c757d;
+  padding: 2em;
+}
+
+.form h1 {
+  color: #6c757d;
+  margin-bottom: 0.5em;
+}
+
+.form_input {
+  width: 20em;
+  margin: 0.5em;
+  font-size: 1.5rem;
+}
+
+.form_input--textarea {
+  width: 20em;
+  margin: 0.5em;
+  padding: 0.5em;
+  font-size: 1.5rem;
+}
+
+.form_submit {
+  width: 20em;
+  font-size: 1.5rem;
+  background: transparent;
+  border: 1px solid #6c757d;
+  padding: 0.5em;
+  color: #6c757d;
+}
+
+.form_submit:hover {
+  background-color: #343a40;
+  color: #6c757d;
+}
+
+.form_back {
+  font-size: 1.1rem;
+  margin: 2em;
+  background: transparent;
+  border: none;
+  color: #6c757d;
+}
+
+.form_back:hover {
+  color: #343a40;
+}
+
+.form_error {
+  color: red;
+  margin-bottom: 0.5em;
+}
+
 select, input {
   padding: 5px;
 }
@@ -814,18 +901,30 @@ select, input {
   z-index: 100000;
 }
 
-@media (max-width: 1280px) {
-  .navbar {
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
+@media (max-width: 1200px) {
+  /*    .navbar{
+        justify-content: center;
+        .userid{
+            display: none;
+        }
+        #startButton{
+            width: 100%;
+            margin: 5px;
+        }
+    }*/
+  .info {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
   }
-  .navbar .userid {
-    display: none;
-  }
-  .navbar #startButton {
-    width: 100%;
-    margin: 5px;
+  .info .info_actions {
+    max-width: 100%;
   }
   .mainArea {
     -webkit-box-pack: center;
@@ -850,28 +949,47 @@ select, input {
         -ms-flex-align: center;
             align-items: center;
   }
-  .info {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
-    -ms-flex-wrap: wrap;
-        flex-wrap: wrap;
-  }
-  .info .info_actions {
-    max-width: 100%;
-  }
   #yourCards {
     -webkit-box-pack: center;
         -ms-flex-pack: center;
             justify-content: center;
   }
+  /*.card{
+        width: $card_width_smol;
+        min-height: $card_width_smol*1.2;
+    }*/
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+  .navbar .userid {
+    display: none;
+  }
+  .navbar #startButton {
+    width: 100%;
+    margin: 5px;
+  }
+  .mainArea {
+    padding-bottom: 0.5em;
+  }
+  #yourCards {
+    padding: 0.5em;
+    padding-left: 0;
+    padding-right: 0;
+  }
   .card {
-    width: 8em;
-    min-height: 9.6em;
+    width: 7.1em;
+    min-height: 8.52em;
+    padding: 0.5em;
+  }
+  .hidden {
+    display: none;
   }
 }
 /*# sourceMappingURL=main.css.map */

@@ -9,13 +9,14 @@ var server = http.Server(app);
 var io = socketIO(server);
 const port = process.env.PORT || 4001;
 
-var cards = require('./src/cards.js');
+var cards = require('./src/functions/cards.js');
 //var events = require('./static/events.js');
 
 app.set('port', port);
 app.use('/src', express.static(__dirname + '/src'));
 
 // Routing
+
 app.get('/', function(request, response) {
   response.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -75,6 +76,7 @@ var blackSkip = 0;
 // TODO work on disconnects, cards sometimes not sending?
 // TODO custom cards searching not having to loop
 
+
 io.on('connect', function(client){
   io.to(client.id).emit('sessionid', client.id);
   io.to(client.id).emit('recieveCategories', cards.getCat);
@@ -90,6 +92,7 @@ io.on('connect', function(client){
     rerolled: false,
     voted: false
   };
+  //console.log(players)
 });
 
 io.on('connection', (client) => {
@@ -97,6 +100,21 @@ io.on('connection', (client) => {
   //unpack();
   client.on('new player', function(){
     //console.log(players[socket.id].name, socket.id);
+    /*io.to(client.id).emit('sessionid', client.id);
+    io.to(client.id).emit('recieveCategories', cards.getCat);
+    players[client.id] = {
+      id: client.id,
+      name: "unknown",
+      points: 0,
+      tzar: false,
+      played: false,
+      tag: noPlayers,
+      pick: false,
+      amountPicked: 0,
+      rerolled: false,
+      voted: false
+    };*/
+    //console.log(players)
     noPlayers++;
     playerList.push(client.id);
     console.log(playerList);
@@ -107,6 +125,8 @@ io.on('connection', (client) => {
                 console.log("white sent: ", client.id, whiteQueue[0].matchid, cards.white[whiteQueue[0].cardid].text );
                 io.to(client.id).emit('recieveWhite', client.id, whiteQueue[0], cards.white[whiteQueue[0].cardid]);
                 whiteQueue.shift();
+                if (whiteQueue.length===0) shuffleWhite();
+
            }
            io.to(client.id).emit('blackCard', prevBlack);
            if (acceptCards==true) {
@@ -160,7 +180,7 @@ io.on('connection', (client) => {
             players[playerList[tzarTag]].tzar=true;
             players[playerList[tzarTag]].pick=false;
             players[playerList[tzarTag]].amountPicked=0;
-            if (acceptCards==true) io.sockets.emit('blockTzar', players[playerList[tzarTag]].id);
+            if (acceptCards==true) io.to(playerList[tzarTag]).emit('blockTzar');
         // remove played cards of new tzar
             for (let id2 in cardsPlayed){
                      if (cardsPlayed[id2].player==players[playerList[tzarTag]].id) {
@@ -181,7 +201,10 @@ io.on('connection', (client) => {
             players[playerList[tzarTag]].pick=true;
             io.sockets.emit('playedCards', cardsPlayed, prevBlack.type);
             io.sockets.emit('enableCards');
-            io.sockets.emit('tzarTurn', players[playerList[tzarTag]]);
+            for (let i in playerList){
+              if (playerList[tzarTag]!=playerList[i]) io.to(playerList[i]).emit('playerWait');
+            }
+            io.to(playerList[tzarTag]).emit('tzarTurn');
         }
 
         playerList.splice(id, 1);
@@ -229,7 +252,10 @@ io.on('connection', (client) => {
   client.on('writeCustom', function(text){
     //cards.white[301].text = text;
     for (let i=0;i<cards.white.length;i++){
-      if (cards.white[i].type==2) cards.white[i].text=text;
+      if (cards.white[i].type==2) {
+        cards.white[i].text=text;
+        break;
+      }
     }
     io.to(client.id).emit('message', message("server", "Customowa karta ustawiona: "+text));
   });
@@ -240,6 +266,7 @@ io.on('connection', (client) => {
     io.sockets.emit('message', message("Black Card", cards.black[blackQueue[0]].text));
     prevBlack = cards.black[blackQueue[0]];
     blackQueue.shift();
+    if (blackQueue.length===0) shuffleBlack();
     io.sockets.emit('state', playerList, players);
     blackSkip=0;
   });
@@ -249,11 +276,12 @@ io.on('connection', (client) => {
     if(!gameStarted) return;
     players[client.id].reroll = true;
 
-    io.to(client.id).emit('deleteWhite', client.id);
+    io.to(client.id).emit('clearBoard');
     for (let i=0;i<whitePerPerson;i++){
         console.log("white sent: ", client.id, whiteQueue[0].matchid, cards.white[whiteQueue[0].cardid].text);
         io.to(client.id).emit('recieveWhite', client.id, whiteQueue[0], cards.white[whiteQueue[0].cardid]);
         whiteQueue.shift();
+        if (whiteQueue.length===0) shuffleWhite();
     }
 
     io.sockets.emit('message', message("server", players[client.id].name+" rerolled their cards"));
@@ -302,9 +330,10 @@ io.on('connection', (client) => {
               players[client.id].pick=false;
               io.sockets.emit('playedCardsHidden');
               io.sockets.emit('state', playerList, players);
-              io.sockets.emit('recieveWhite', client.id, whiteQueue[0], cards.white[whiteQueue[0].cardid]);
+              io.to(client.id).emit('recieveWhite', client.id, whiteQueue[0], cards.white[whiteQueue[0].cardid]);
               io.sockets.emit('disableCards', client.id);
               whiteQueue.shift();
+              if (whiteQueue.length===0) shuffleWhite();
               cardsPlayed[cardsPlayedi++] = {
                 player: client.id,
                 matchid: matchCardID,
@@ -320,7 +349,12 @@ io.on('connection', (client) => {
                 io.sockets.emit('playedCards', cardsPlayed, prevBlack.type);
                 io.sockets.emit('state', playerList, players);
                 io.sockets.emit('enableCards');
-                io.sockets.emit('tzarTurn', players[playerList[tzarTag]]);
+
+                for (let i in playerList){
+                  if (playerList[tzarTag]!=playerList[i]) io.to(playerList[i]).emit('playerWait');
+                }
+                io.to(playerList[tzarTag]).emit('tzarTurn');
+                
               }
       }
       else if (prevBlack.type==2 || prevBlack.type==3){
@@ -338,6 +372,7 @@ io.on('connection', (client) => {
                  for (let i=0;i<prevBlack.type;i++){
                         io.to(client.id).emit('recieveWhite', client.id, whiteQueue[0], cards.white[whiteQueue[0].cardid]);
                         whiteQueue.shift();
+                        if (whiteQueue.length===0) shuffleWhite();
                  }
                  io.sockets.emit('disableCards', client.id);
 
@@ -351,7 +386,10 @@ io.on('connection', (client) => {
                    io.sockets.emit('playedCards', cardsPlayed, prevBlack.type);
                    io.sockets.emit('state', playerList, players);
                    io.sockets.emit('enableCards');
-                   io.sockets.emit('tzarTurn', players[playerList[tzarTag]]);
+                   for (let i in playerList){
+                    if (playerList[tzarTag]!=playerList[i]) io.to(playerList[i]).emit('playerWait');
+                  }
+                  io.to(playerList[tzarTag]).emit('tzarTurn');
                  }
         }
       }
@@ -406,7 +444,7 @@ io.on('connection', (client) => {
       io.sockets.emit('message', message("server", "Fetching black cards..."))
       await cards.generateBlack();
 
-      let tmp = (whitePerPerson*2)+(noPlayers*winningPoints)+(3*12*noPlayers);
+      let tmp = (whitePerPerson*2)+(noPlayers*winningPoints);
       tmp = tmp * noPlayers;
       tmp = Math.ceil(tmp/cards.white.length);
       for (let i=0;i<tmp;i++){
@@ -425,11 +463,15 @@ io.on('connection', (client) => {
       acceptCards = true;
       acceptTzar = false;
 
+      //io.to(client.id).emit('log');
+      //io.sockets.emit('log');
+      //console.log(client.id, playerList[0])
       for (let id in playerList) {
         for (let i=0;i<whitePerPerson;i++){
           console.log("white sent: ", playerList[id], whiteQueue[0].matchid, cards.white[whiteQueue[0].cardid].text);
           io.to(playerList[id]).emit('recieveWhite', playerList[id], whiteQueue[0], cards.white[whiteQueue[0].cardid]);
           whiteQueue.shift();
+          if (whiteQueue.length===0) shuffleWhite();
         }
       }
 
@@ -438,6 +480,7 @@ io.on('connection', (client) => {
       io.sockets.emit('message', message("Black Card", cards.black[blackQueue[0]].text));
       prevBlack = cards.black[blackQueue[0]];
       blackQueue.shift();
+      if (blackQueue.length===0) shuffleBlack();
 
       for (let id in players) {
         players[id].points=0;
@@ -455,14 +498,22 @@ io.on('connection', (client) => {
       players[playerList[tzarTag]].amountPicked=0;
 
       io.sockets.emit('state', playerList, players);
-      io.sockets.emit('blockTzar', players[playerList[tzarTag]].id);
+      io.to(playerList[tzarTag]).emit('blockTzar');
       io.sockets.emit('startTurn');
       //console.log(players, playerList);
       //console.log(fetchBlack(0), fetchBlack(2), fetchBlack(5));
       pressed=false;
   });
-  client.on('message', async function(input) {
-    console.log(input.date," ",input.author," : ", input.sauce);
+  client.on('message', async function(msg) {
+    let date = new Date();
+    let input = {
+      date: "["+String(date.getHours()).padStart(2,"0")+":"
+      +String(date.getMinutes()).padStart(2,"0")+":"
+      +String(date.getSeconds()).padStart(2,"0")+"]",
+      author: players[client.id].name,
+      sauce: msg
+    }
+    console.log(input.date," ",players[client.id].name," : ", input.sauce);
     io.sockets.emit('message', input);
     //console.log("|"+input.sauce+"|")
     if (input.sauce=="!stats") {
@@ -498,6 +549,7 @@ function setUpTurn(){
         io.sockets.emit('blackCard', cards.black[blackQueue[0]]);
         prevBlack = cards.black[blackQueue[0]];
         blackQueue.shift();
+        if (blackQueue.length===0) shuffleBlack();
         blackSkip=0;
 
         acceptCards=true;
@@ -518,7 +570,7 @@ function setUpTurn(){
         //console.log(players);
         acceptCards=true;
         io.sockets.emit('enableCards');
-        io.sockets.emit('blockTzar', players[playerList[tzarTag]].id);
+        io.to(playerList[tzarTag]).emit('blockTzar');
       }, 5000)
 }
 
@@ -632,6 +684,7 @@ console.log(name)
     for (let i in playerList){
         if (players[playerList[i]].name==name){
                       // remove commited cards of that person
+                                io.to(playerList[i]).emit('clearBoard');
                                    for (let id2 in cardsPlayed){
                                        if (cardsPlayed[id2].player==playerList[i]) {
                                            cardsPlayed.splice(id2, 1);
@@ -646,7 +699,7 @@ console.log(name)
                                     players[playerList[tzarTag]].tzar=true;
                                     players[playerList[tzarTag]].pick=false;
                                     players[playerList[tzarTag]].amountPicked=0;
-                                    if (acceptCards==true) io.sockets.emit('blockTzar', players[playerList[tzarTag]].id);
+                                    if (acceptCards==true) io.to(playerList[tzarTag]).emit('blockTzar');
                                 // remove played cards of new tzar
                                     for (let id2 in cardsPlayed){
                                              if (cardsPlayed[id2].player==players[playerList[tzarTag]].id) {
@@ -667,7 +720,10 @@ console.log(name)
                                     players[playerList[tzarTag]].pick=true;
                                     io.sockets.emit('playedCards', cardsPlayed, prevBlack.type);
                                     io.sockets.emit('enableCards');
-                                    io.sockets.emit('tzarTurn', players[playerList[tzarTag]]);
+                                    for (let i in playerList){
+                                      if (playerList[tzarTag]!=playerList[i]) io.to(playerList[i]).emit('playerWait');
+                                    }
+                                    io.to(playerList[tzarTag]).emit('tzarTurn');
                                 }
 
                                 playerList.splice(playerList[i], 1);

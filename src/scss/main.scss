@@ -1,6 +1,12 @@
 @import './variables';
 @import './resets';
 
+@mixin center(){
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 @mixin card(){
     background-repeat: no-repeat;
     background-size: contain;
@@ -458,6 +464,72 @@ box-shadow:  1px 1px 2px #22262a,
         background-color: $card_black_bg;
     }
 }
+
+.wrapper_form{
+    @include center;
+    flex-direction: column;
+}
+
+.form{
+    @include center;
+    flex-direction: column;
+    color: $main_color;
+    background-color: $secondary_color;
+
+    border: 1px solid $main_color;
+
+    padding: 2em;
+
+    h1{
+        color: $main_color;
+        margin-bottom: 0.5em;
+    }
+}
+
+.form_input{
+    width: 20em;
+    margin: 0.5em;
+    font-size: 1.5rem;
+}
+
+.form_input--textarea{
+    width: 20em;
+    margin: 0.5em;
+    padding: 0.5em;
+    font-size: 1.5rem;
+}
+
+.form_submit{
+    width: 20em;
+    font-size: 1.5rem;
+    background: transparent;
+    border: 1px solid $main_color;
+    padding: 0.5em;
+    color: $main_color;
+
+    &:hover{
+        background-color: $navbar_color;
+        color: $main_color;
+    }
+}
+
+.form_back{
+    font-size: 1.1rem;
+    margin: 2em;
+    background: transparent;
+    border: none;
+    color: $main_color;
+
+    &:hover{
+        color: $navbar_color;
+    }
+}
+
+.form_error{
+    color: red;
+    margin-bottom: 0.5em;
+}
+
 
 select, input{
     padding: 5px;

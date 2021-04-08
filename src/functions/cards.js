@@ -43,8 +43,8 @@ const cdecks = async (decks) => {
 				if (json[i].whites==undefined) continue;
 				//console.log(json[i].whites);
 				for (let j=0;j<json[i].whites.length;j++){
-					white[whitei++]={
-						id: whitei,
+					white[whitei]={
+						id: whitei++,
 						type: json[i].whites[j].type,
 						text: json[i].whites[j].text,
 						//color: json[i].color
@@ -91,7 +91,6 @@ const generateBlack = async () => {
 				  }
 			  }
 }
-
 
 module.exports = {
   white: white,
