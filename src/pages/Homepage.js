@@ -7,6 +7,8 @@ import Info from '../components/info.js'
 
 import {SocketContext} from '../hooks/Socket.js'
 import {PlayerCards} from '../hooks/PlayerCards.js'
+import {CardsPlayed} from "../hooks/CardsPlayed";
+import {BlackCard} from "../hooks/BlackCard";
 
 let nickname = "unknown";
 
@@ -73,10 +75,10 @@ const Homepage = () => {
   return (
       <div id="wrapper">
           <Navbar />
-          <Main  />
-          <PlayerCards>
-            <Cards  />
-          </PlayerCards>
+            <Main  />
+            <PlayerCards>
+              <Cards  />
+            </PlayerCards>
           <Info />
       </div>
   );

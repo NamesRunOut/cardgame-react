@@ -1,10 +1,5 @@
 import React, {useContext, useEffect, useState} from "react"
-
 import {SocketContext} from '../hooks/Socket.js'
-
-
-import {Link} from 'react-router-dom'
-
 
 const BlackCard = () => {
   const socket = useContext(SocketContext)

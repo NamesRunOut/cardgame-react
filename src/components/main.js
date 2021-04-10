@@ -5,14 +5,15 @@ import BlackCard from "./BlackCard";
 import CardsPlayed from "./CardsPlayed";
 
 const Main = () => {
-  const socket = useContext(SocketContext)
-  const [blackType, setBlackType] = useState(null)
+    const socket = useContext(SocketContext)
+    const [blackType, setBlackType] = useState(null)
 
-  useEffect(() => {
-      socket.on('blackCard', function(card) {
-          setBlackType(card?.type)
-      });
-    }, [socket]);
+    useEffect(() => {
+        socket.on('blackCard', function(card) {
+            //console.log('Blackcard', card)
+            setBlackType(card.type)
+        });
+        }, [socket]);
 
   return (
     <div className="mainArea">
