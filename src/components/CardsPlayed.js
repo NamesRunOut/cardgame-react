@@ -18,17 +18,26 @@ function insertionSort(inputArr) {
     return inputArr;
 }
 
+// TODO client is recieving player ids, potential sec issue
+// TODO blocking from commiting more cards
+
 const CardsPlayed = ({blackType}) => {
     const socket = useContext(SocketContext)
     const [cards, setCards] = useState([])
 
     useEffect(() => {
         socket.on('playedCards', function(playedCards, type) {
+            console.log('played')
+            if (playedCards.length === 0) {
+                setCards([])
+                return
+            }
             switch (type){
                 case 0:
                     setCards([...playedCards])
                     break;
-                case 2 || 3:
+                case 2:
+                case 3:
                     let played = playedCards
                     insertionSort(played)
                     let box = [played[0]]
@@ -42,64 +51,80 @@ const CardsPlayed = ({blackType}) => {
                     }
                     tmp.push(box)
                     setCards([...tmp])
+                    console.log('setup', tmp)
+                    break;
+            }
+        })
+        /*socket.on('highlightCard', function(cardid, players){
+            console.log('highlight')
+            if (cards.length === 0) return
+
+            let tmp = []
+            let winningPlayer = ""
+            for (let i=0;i<cards.length;i++){
+                if(cards[i].matchid===cardid) {
+                    winningPlayer=cards[i].player
+                    break
+                }
+            }
+
+            switch (blackType){
+                case 0:
+                    for (let i=0;i<cards.length;i++){
+                        //console.log(cards[i].player, winningPlayer, cards[i].player === winningPlayer)
+                        tmp.push({
+                            card: cards[i].card,
+                            matchid: cards[i].matchid,
+                            player: cards[i].player,
+                            playerName: players[cards[i].player].name,
+                            chosen: cards[i].player !== winningPlayer,
+                            revealed: true
+                        })
+                    }
+                    break;
+                case 2:
+                case 3:
+                    console.log(players, cards[0].player)
+
+                    let box = [{
+                        card: cards[0].card,
+                        matchid: cards[0].matchid,
+                        player: cards[0].player,
+                        playerName: players[cards[0].player].name,
+                        chosen: cards[0].player !== winningPlayer,
+                        revealed: true
+                    }]
+
+                    for (let i=1;i<cards.length;i++){
+                        if (cards[i].player === cards[i-1].player)
+                            box.push({
+                            card: cards[i].card,
+                            matchid: cards[i].matchid,
+                            player: cards[i].player,
+                            playerName: players[cards[i].player].name,
+                            chosen: cards[i].player !== winningPlayer,
+                            revealed: true
+                        })
+                        else {
+                            tmp.push(box)
+                            box = [{
+                                card: cards[i].card,
+                                matchid: cards[i].matchid,
+                                player: cards[i].player,
+                                playerName: players[cards[i].player].name,
+                                chosen: cards[i].player !== winningPlayer,
+                                revealed: true
+                            }]
+                        }
+                    }
+                    tmp.push(box)
                     console.log(tmp)
                     break;
-                default:
-                    setCards([])
-                    break;
             }
-        });
-/*
-        socket.on('highlightCard', function(cardid, players){
-            //let node = document.getElementById('cards');
-            //node.innerHTML = "";
-            if (blackType===0){
-                for (let id in allCards){
-                    let msg = document.createElement("div");
-                    msg.className="biggerCard";
-                    msg.setAttribute("style", "opacity: 0.5;");
-                    if (allCards[id].card.type===0 || allCards[id].card.type===2){
-                        msg.innerHTML = allCards[id].card.text+" ["+players[allCards[id].player].name+"]";
-                        if (allCards[id].matchid===cardid) msg.setAttribute("style", "opacity: 1;");
-                    } else if (allCards[id].card.type===1){
-                        msg.innerHTML = "["+players[allCards[id].player].name+"]";
-                        if (allCards[id].matchid===cardid) msg.setAttribute("style", "opacity: 1; background-image: url("+allCards[id].card.text+")")
-                        else msg.setAttribute("style", "opacity: 0.5; background-image: url("+allCards[id].card.text+")")
-                    }
-                    document.getElementById("cards").appendChild(msg);
-                }
-            } else if (blackType===2 || blackType===3){
-                let boxid = 0;
-                let box;
-                let winningPlayer ="";
-                for (let id=0;id<allCards.length;id++){
-                    if(allCards[id].matchid===cardid) winningPlayer=allCards[id].player;
-                }
-                for (let id=0;id<allCards.length;id++){
-                    if(id===0 || allCards[id].player!==allCards[id-1].player){
-                        box = document.createElement("div");
-                        box.className="box";
-                        box.id=boxid;
-                        document.getElementById("cards").appendChild(box);
-                        boxid++;
-                    }
-                    let msg = document.createElement("div");
-                    msg.className="biggerCard";
-                    msg.setAttribute("style", "opacity: 0.5;")
-
-                    if (allCards[id].card.type===0 || allCards[id].card.type===2){
-                        msg.innerHTML = allCards[id].card.text+" ["+players[allCards[id].player].name+"]";
-                        if (allCards[id].player===winningPlayer) msg.setAttribute("style", "opacity: 1;");
-                    } else if (allCards[id].card.type===1){
-                        msg.innerHTML = "["+players[allCards[id].player].name+"]";
-                        if (allCards[id].player===winningPlayer) msg.setAttribute("style", "opacity: 1; background-image: url("+allCards[id].card.text+")")
-                        else msg.setAttribute("style", "opacity: 0.5; background-image: url("+allCards[id].card.text+")")
-                    }
-                    document.getElementById(boxid-1).appendChild(msg);
-                }
-            }
-        });*/
-    }, [socket]);
+            console.log(tmp, cards, blackType)
+            setCards([...tmp])
+        })*/
+    }, [socket, cards])
 
     return (
         <div id="cards">
@@ -109,11 +134,11 @@ const CardsPlayed = ({blackType}) => {
                     element => {
                         switch(blackType){
                             case 0:
-                                return <CommitedCard key={element.matchid} card={element} chosen={true} />
+                                return <CommitedCard key={element.matchid} card={element} chosen={!element.chosen} revealed={element.revealed || false} player={element.playerName || 'unknown'} />
                             case 2 || 3:
-                                return <div className="box">
+                                return <div key={`${element.matchid}box`} className="box">
                                     {element.map(box => {
-                                        return <CommitedCard key={box.matchid} card={box} chosen={true} />
+                                        return <CommitedCard key={box.matchid} card={box} chosen={!box.chosen} revealed={box.revealed || false} player={box.playerName || 'unknown'} />
                                     })}
                                 </div>
                             default:

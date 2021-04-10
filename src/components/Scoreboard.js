@@ -3,21 +3,23 @@ import {SocketContext} from '../hooks/Socket.js'
 
 const Scoreboard = () => {
     const socket = useContext(SocketContext)
-    const [sessionid, setSessionid] = useState("not")
+    //const [sessionid, setSessionid] = useState("not")
     const [players, setPlayers] = useState([])
+
+    let sessionid = "not"
 
     useEffect(() => {
         socket.on('sessionid', function(id) {
-            setSessionid(id)
+            //setSessionid(id)
+            sessionid = id
         });
         socket.on('state', function(playerList, players) {
             let tmp = []
             for (let id in playerList){
                 let p = players[playerList[id]]
-
                 let name = p.name
+                //console.log('session', p.id, sessionid)
                 if (p.id === sessionid) name += " (you)"
-
                 let status = ""
                 if (p.tzar) status = "tzar"
                 else if (!p.played) status = "playing..."
@@ -30,7 +32,7 @@ const Scoreboard = () => {
             }
             setPlayers([...tmp])
         })
-    }, [socket]);
+    }, [socket])
 
     return (
         <div id="scoreboard">
