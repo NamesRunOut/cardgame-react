@@ -25,7 +25,7 @@ export function getCookie(cname) {
   return "";
 }
 
-function Homepage() {
+const Homepage = () => {
   const socket = useContext(SocketContext)
 
   window.onload = function() {
