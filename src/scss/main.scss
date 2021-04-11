@@ -393,6 +393,7 @@ box-shadow:  1px 1px 2px #22262a,
                 background-color: $navbar_color;
                 color: $secondary_color;
                 padding: $info_padding;
+                min-width: 10rem;
 
                 &:hover{
                     @include buttonHover;
@@ -613,6 +614,18 @@ select, input{
         padding: 0.5em;
         padding-left: 0;
         padding-right: 0;
+    }
+    .info{
+        @include flexRow;
+        #{&}_actions{
+            width: 100%;
+        }
+        #{&}_chat{
+            width: 100%;
+        }
+        #{&}_score{
+            width: 100%;
+        }
     }
     .card{
         width: $card_width_mini;

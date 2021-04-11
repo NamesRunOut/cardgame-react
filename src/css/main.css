@@ -708,6 +708,7 @@ button {
   background-color: #343a40;
   color: #f8f9fa;
   padding: 1em;
+  min-width: 10rem;
 }
 
 .info .info_actions_action button:hover {
@@ -982,6 +983,26 @@ select, input {
     padding: 0.5em;
     padding-left: 0;
     padding-right: 0;
+  }
+  .info {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+  }
+  .info .info_actions {
+    width: 100%;
+  }
+  .info .info_chat {
+    width: 100%;
+  }
+  .info .info_score {
+    width: 100%;
   }
   .card {
     width: 7.1em;
