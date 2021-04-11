@@ -75,10 +75,12 @@ const Homepage = () => {
   return (
       <div id="wrapper">
           <Navbar />
-            <Main  />
-            <PlayerCards>
-              <Cards  />
-            </PlayerCards>
+            <BlackCard>
+              <Main  />
+              <PlayerCards>
+                <Cards  />
+              </PlayerCards>
+          </BlackCard>
           <Info />
       </div>
   );

@@ -5,11 +5,11 @@ export const BlackCardContext = createContext()
 
 const BlackCard = (props) => {
     const socket = useContext(SocketContext)
-    const [blackType, setBlackType] = useState(null)
+    const [blackType, setBlackType] = useState(0)
 
     useEffect(() => {
         socket.on('blackCard', function(card) {
-            console.log('Blackcard', card)
+            //console.log('Blackcard', card)
             setBlackType(card.type)
         });
     }, [socket]);
