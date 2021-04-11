@@ -1,10 +1,12 @@
 import React, {useState, createContext, useEffect, useContext} from 'react'
 import {displayCustom, displayMessage} from "../components/Chat";
 import {SocketContext} from "./Socket";
+import {BlackCardContext} from "./BlackCard";
 
 export const PlayerCardsContext = createContext()
 
 const PlayerCards = (props) => {
+  const blackType = useContext(BlackCardContext)
   const socket = useContext(SocketContext)
 
   const [whiteCards, setWhiteCards] = useState([])
