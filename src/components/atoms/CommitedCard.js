@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from "react"
-import {SocketContext} from "../hooks/Socket";
-import {BlackCardContext} from "../hooks/BlackCard";
+import {SocketContext} from "../../hooks/Socket";
+import {BlackCardContext} from "../../hooks/BlackCard";
 
 const CommitedCard = ({card, player, playerName, chosen, revealed}) => {
     const socket = useContext(SocketContext)

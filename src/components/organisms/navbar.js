@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
 
-import {SocketContext} from '../hooks/Socket.js'
-import StartButton from "./StartButton";
-import Points from "./Points";
-import Decks from "./Decks";
+import {SocketContext} from '../../hooks/Socket.js'
+import StartButton from "../atoms/StartButton";
+import Points from "../molecules/Points";
+import Decks from "../molecules/Decks";
 
 const Navbar = () => {
     const socket = useContext(SocketContext)

@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from "react";
-import {SocketContext} from "../hooks/Socket";
+import {SocketContext} from "../../hooks/Socket";
 
 const Placeholders = () => {
     const socket = useContext(SocketContext)

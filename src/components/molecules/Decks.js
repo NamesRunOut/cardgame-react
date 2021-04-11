@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from "react";
 
-import {SocketContext} from '../hooks/Socket.js'
+import {SocketContext} from '../../hooks/Socket.js'
 
 const Decks = ({response}) => {
     const socket = useContext(SocketContext)

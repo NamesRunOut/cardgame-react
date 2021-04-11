@@ -1,11 +1,11 @@
 import React, { useContext, useState, useEffect } from "react";
 
-import {SocketContext} from '../hooks/Socket.js'
-import {CardsPlayed} from "../hooks/CardsPlayed";
+import {SocketContext} from '../../hooks/Socket.js'
+import {CardsPlayed} from "../../hooks/CardsPlayed";
 
-import BlackCard from "./BlackCard";
-import CardsPlayedDiv from "./CardsPlayed";
-import {BlackCardContext} from "../hooks/BlackCard";
+import BlackCard from "../atoms/BlackCard";
+import CardsPlayedDiv from "../molecules/CardsPlayed";
+import {BlackCardContext} from "../../hooks/BlackCard";
 
 const Main = () => {
 

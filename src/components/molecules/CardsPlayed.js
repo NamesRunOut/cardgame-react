@@ -1,10 +1,10 @@
 import React, { useContext, useState, useEffect } from "react";
 
-import {SocketContext} from '../hooks/Socket.js'
-import Placeholders from "./Placeholders";
-import CommitedCard from "./CommitedCard";
-import {CardsPlayedContext} from "../hooks/CardsPlayed";
-import {BlackCardContext} from "../hooks/BlackCard";
+import {SocketContext} from '../../hooks/Socket.js'
+import Placeholders from "../atoms/Placeholders";
+import CommitedCard from "../atoms/CommitedCard";
+import {CardsPlayedContext} from "../../hooks/CardsPlayed";
+import {BlackCardContext} from "../../hooks/BlackCard";
 
 // TODO blocking from commiting more cards
 

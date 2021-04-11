@@ -1,5 +1,5 @@
 import React, {useState, createContext, useEffect, useContext} from 'react'
-import {displayCustom, displayMessage} from "../components/Chat";
+import {displayCustom, displayMessage} from "../components/molecules/Chat";
 import {SocketContext} from "./Socket";
 import {BlackCardContext} from "./BlackCard";
 
@@ -34,11 +34,6 @@ const PlayerCards = (props) => {
     socket.emit('cardCommited', cardid, cardSauceid);
   }
 
-  const writeCustom = () => {
-    let text = document.getElementById('customInput')?.value || '';
-    socket.emit("writeCustom", text);
-  }
-
   useEffect(() => {
     tmp !== [] && setWhiteCards([...whiteCards, tmp])
   }, [tmp]);
@@ -47,7 +42,7 @@ const PlayerCards = (props) => {
     socket.on('recieveWhite', function(id, card, cardSauce) {
       setTmp({card: card, sauce: cardSauce})
 
-      if(cardSauce.type===2) {
+      /*if(cardSauce.type===2) {
         let div1 = document.createElement("div");
         div1.className="info_chat_input";
 
@@ -56,7 +51,7 @@ const PlayerCards = (props) => {
           <button type="button" onClick={writeCustom}>Send</button>
         </div>*/
 
-        let inp1 = document.createElement("input");
+        /*let inp1 = document.createElement("input");
         inp1.id = "customInput";
         inp1.setAttribute("placeholder", "Tu wpisz tekst customowej karty");
         inp1.setAttribute("aria-label", "Tu wpisz tekst customowej karty");
@@ -76,7 +71,7 @@ const PlayerCards = (props) => {
         date: '',
         author: "white card",
         sauce: "["+card.matchid+"] "+cardSauce.text
-      });
+      });*/
     })
 
     socket.on('loadloader', function(number) {

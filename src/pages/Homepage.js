@@ -1,9 +1,9 @@
 import React, {useContext} from 'react';
 
-import Navbar from '../components/navbar.js'
-import Main from '../components/main.js'
-import Cards from '../components/cards.js'
-import Info from '../components/info.js'
+import Navbar from '../components/organisms/navbar.js'
+import Main from '../components/organisms/main.js'
+import Cards from '../components/organisms/cards.js'
+import Info from '../components/organisms/info.js'
 
 import {SocketContext} from '../hooks/Socket.js'
 import {PlayerCards} from '../hooks/PlayerCards.js'

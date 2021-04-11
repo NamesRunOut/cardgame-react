@@ -1,6 +1,6 @@
 import React, {useState, createContext, useEffect} from 'react'
 import socketIOClient from "socket.io-client";
-import {displayCustom, displayMessage} from "../components/info";
+import {displayCustom, displayMessage} from "../components/organisms/info";
 
 const ENDPOINT = "http://127.0.0.1:4001";
 const socketClient = socketIOClient(ENDPOINT);

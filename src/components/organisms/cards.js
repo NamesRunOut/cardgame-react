@@ -1,9 +1,9 @@
 import React, {useContext, useState} from "react";
 
-import {PlayerCardsContext} from "../hooks/PlayerCards";
-import Loader from "./Loader";
-import WhiteCard from "./WhiteCard";
-import Blocker from "./Blocker";
+import {PlayerCardsContext} from "../../hooks/PlayerCards";
+import Loader from "../atoms/Loader";
+import WhiteCard from "../atoms/WhiteCard";
+import Blocker from "../atoms/Blocker";
 
 const Cards = () => {
   const [whiteCards, , loader, message, cardCommited] = useContext(PlayerCardsContext)

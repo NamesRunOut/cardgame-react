@@ -1,9 +1,9 @@
 import React from "react";
 
-import Contact from "./Contact";
-import Actions from "./Actions";
-import Scoreboard from "./Scoreboard";
-import Chat from "./Chat";
+import Contact from "../atoms/Contact";
+import Actions from "../molecules/Actions";
+import Scoreboard from "../molecules/Scoreboard";
+import Chat from "../molecules/Chat";
 
 const Info = () => {
   return (

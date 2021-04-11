@@ -1,8 +1,8 @@
 import React from "react"
-import github from "../images/github.svg";
-import twitter from "../images/twitter.svg";
+import github from "../../images/github.svg";
+import twitter from "../../images/twitter.svg";
 import {Link} from "react-router-dom";
-import gmail from "../images/gmail.svg";
+import gmail from "../../images/gmail.svg";
 
 const Contact = () => {
     return (

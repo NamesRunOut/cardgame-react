@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 
-import {SocketContext} from '../hooks/Socket.js'
+import {SocketContext} from '../../hooks/Socket.js'
 
 const Points = ({response}) => {
     const socket = useContext(SocketContext)
