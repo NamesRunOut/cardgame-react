@@ -2,8 +2,8 @@ import React, {useState, createContext, useEffect} from 'react'
 import socketIOClient from "socket.io-client";
 import {displayCustom, displayMessage} from "../components/organisms/info";
 
-const ENDPOINT = `https://names-cards.herokuapp.com`
-const socketClient = socketIOClient()
+const ENDPOINT = `https://names-cards.herokuapp.com/socket/socket.io`
+const socketClient = socketIOClient(ENDPOINT)
 
 export const SocketContext = createContext()
 
