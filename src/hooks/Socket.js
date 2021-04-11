@@ -2,8 +2,8 @@ import React, {useState, createContext, useEffect} from 'react'
 import socketIOClient from "socket.io-client";
 import {displayCustom, displayMessage} from "../components/organisms/info";
 
-const ENDPOINT = `http://127.0.0.1:${process.env.PORT}`
-const socketClient = socketIOClient(ENDPOINT)
+const ENDPOINT = `https://names-cards.herokuapp.com/:${process.env.PORT}`
+const socketClient = socketIOClient()
 
 export const SocketContext = createContext()
 
