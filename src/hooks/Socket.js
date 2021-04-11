@@ -1,14 +1,16 @@
 import React, {useState, createContext, useEffect} from 'react'
 import socketIOClient from "socket.io-client";
 import {displayCustom, displayMessage} from "../components/organisms/info";
+import io from 'socket.io-client'
 
-const ENDPOINT = `https://names-cards.herokuapp.com/socket/socket.io`
+const ENDPOINT = "http://127.0.0.1:4001"
 const socketClient = socketIOClient(ENDPOINT)
+const client = io()
 
 export const SocketContext = createContext()
 
 const Socket = (props) => {
-    const [socket] = useState(socketClient);
+    const [socket] = useState(client);
 
     return (
         <SocketContext.Provider value={socket}>

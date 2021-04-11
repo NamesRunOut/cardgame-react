@@ -2,7 +2,7 @@
 var express = require('express');
 var http = require('http');
 var path = require('path');
-var socketIO = require('socket.io');
+var socketIO = require('socket.io')
 
 var app = express();
 var server = http.Server(app);
@@ -14,10 +14,11 @@ var cards = require('./src/functions/cards.js');
 
 app.set('port', port);
 app.use('/src', express.static(__dirname + '/src'));
+app.use(express.static("build"))
 
 // Routing
 
-app.get('/', function(request, response) {
+app.get('/build', function(request, response) {
   response.sendFile(path.join(__dirname, 'index.html'));
 });
 
