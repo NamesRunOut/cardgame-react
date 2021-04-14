@@ -12,6 +12,8 @@ export const SocketContext = createContext()
 const Socket = (props) => {
     const [socket] = useState(client);
 
+    socket.on('sessionid', (sessionid) => alert(sessionid))
+
     return (
         <SocketContext.Provider value={socket}>
             {props.children}
