@@ -21,9 +21,6 @@ const WhiteCard = ({card, commitFunction}) => {
             className='card'
             variants={item}
             whileHover={{ scale: 1.1 }}
-            whileTap={{
-                scale: 0.8
-            }}
             onClick={() => commitFunction(card.card.matchid, card.sauce.id)}
             style={{backgroundImage: card.sauce.type === 1 ? `url(${card.sauce.text})` : ''}}>
             {(card.sauce.type === 0 || card.sauce.type === 2) ? `${card.sauce.text} [${card.card.matchid}]` : ''}

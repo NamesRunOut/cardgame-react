@@ -3,8 +3,8 @@ import socketIOClient from "socket.io-client";
 import {displayCustom, displayMessage} from "../components/organisms/info";
 import io from 'socket.io-client'
 
-const ENDPOINT = "http://127.0.0.1:4001"
-const socketClient = socketIOClient(ENDPOINT)
+//const ENDPOINT = "http://127.0.0.1:4001"
+//const socketClient = socketIOClient(ENDPOINT)
 const client = io()
 
 export const SocketContext = createContext()
