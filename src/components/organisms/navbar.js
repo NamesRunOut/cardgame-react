@@ -4,6 +4,7 @@ import {SocketContext} from '../../hooks/Socket.js'
 import StartButton from "../atoms/StartButton";
 import Points from "../molecules/Points";
 import Decks from "../molecules/Decks";
+import DragButton from "../atoms/DragButton";
 
 const Navbar = () => {
     const socket = useContext(SocketContext)
@@ -23,6 +24,7 @@ const Navbar = () => {
       <StartButton response={response} />
       <Points response={response} />
       <Decks response={response} />
+      <DragButton />
     </div>
   );
 }

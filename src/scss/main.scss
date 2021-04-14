@@ -178,6 +178,7 @@ box-shadow:  1px 1px 2px #22262a,
     }
     .box{
         border-radius: 1rem;
+        margin-bottom: 1em;
         display: flex;
         flex-wrap: wrap;
         background-color: lighten($card_black_bg, 10%);

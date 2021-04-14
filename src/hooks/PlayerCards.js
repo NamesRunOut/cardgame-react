@@ -13,13 +13,57 @@ const PlayerCards = (props) => {
   const [message, setMessage] = useState(null)
   const [loader, setLoader] = useState(false)
 
-  const [canCommit, setCanCommit] = useState(true) // TODO false later
+  const [commit, setCommit] = useState({
+    canCommit: true,
+    commitCount: 0
+  })
 
   const [tmp, setTmp] = useState([])
 
   const cardCommited = (cardid, cardSauceid) => {
+    //console.log(commit.commitCount, commit.canCommit, blackType)
+
     let tmpWhite = [...whiteCards]
-    if (tmpWhite.length === 0 || !canCommit) return
+    if (tmpWhite.length === 0 || !commit.canCommit) return
+
+    switch (blackType){
+      case 0:
+        if (commit.commitCount >= 0)
+          setCommit({
+            canCommit: false,
+            commitCount: commit.commitCount
+          })
+          else
+            setCommit({
+              canCommit: commit.canCommit,
+              commitCount: commit.commitCount+1
+           })
+        break;
+      case 2:
+        if (commit.commitCount >= 1)
+          setCommit({
+            canCommit: false,
+            commitCount: commit.commitCount
+          })
+        else
+          setCommit({
+            canCommit: commit.canCommit,
+            commitCount: commit.commitCount+1
+          })
+        break;
+      case 3:
+        if (commit.commitCount >= 2)
+          setCommit({
+            canCommit: false,
+            commitCount: commit.commitCount
+          })
+        else
+        setCommit({
+          canCommit: commit.canCommit,
+          commitCount: commit.commitCount+1
+        })
+        break;
+    }
     //console.log('white', tmpWhite)
     //setCanCommit(false)
     for (let i=0;i<tmpWhite.length;i++){
@@ -33,6 +77,8 @@ const PlayerCards = (props) => {
     setWhiteCards([...tmpWhite])
     socket.emit('cardCommited', cardid, cardSauceid);
   }
+
+  // TODO cards block on commit, confirm selection
 
   useEffect(() => {
     tmp !== [] && setWhiteCards([...whiteCards, tmp])
@@ -84,23 +130,45 @@ const PlayerCards = (props) => {
 
     socket.on('tzarTurn', function() {
       setMessage('You are the tzar, pick a card')
+      setCommit({
+        canCommit: false,
+        commitCount: commit.commitCount
+      })
     })
 
     socket.on('playerWait', function() {
       setMessage('Tzar is picking a card')
-      //setCanCommit(false)
+      setCommit({
+        canCommit: false,
+        commitCount: commit.commitCount
+      })
     })
 
     socket.on('blockTzar', function(tzarid) {
       setMessage('You are the tzar')
+      setCommit({
+        canCommit: false,
+        commitCount: commit.commitCount
+      })
     })
 
     socket.on('enableCards', function() {
       setMessage(null)
+      setCommit({
+        canCommit: true,
+        commitCount: 0
+      })
     })
 
     socket.on('clearBoard', function() {
       setWhiteCards([])
+    })
+
+    socket.on("startDisable", data => {
+      setCommit({
+        canCommit: true,
+        commitCount: 0
+      })
     })
   }, [socket]);
 

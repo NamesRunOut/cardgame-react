@@ -10,9 +10,7 @@ const client = io()
 export const SocketContext = createContext()
 
 const Socket = (props) => {
-    const [socket] = useState(client);
-
-    socket.on('sessionid', (sessionid) => alert(sessionid))
+    const [socket] = useState(client);//useState(socketClient);
 
     return (
         <SocketContext.Provider value={socket}>

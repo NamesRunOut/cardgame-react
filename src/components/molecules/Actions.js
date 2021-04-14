@@ -15,8 +15,8 @@ const BlackCard = () => {
     }
 
     const skip = () => {
-        //if (!canSkip) return;
-        //setCanSkip(false)
+        if (!canSkip) return;
+        setCanSkip(false)
         socket.emit('skipBlack');
         setTimeout(function(){
             setCanSkip(true)

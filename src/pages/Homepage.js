@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useRef} from 'react';
 
 import Navbar from '../components/organisms/navbar.js'
 import Main from '../components/organisms/main.js'
@@ -9,6 +9,7 @@ import {SocketContext} from '../hooks/Socket.js'
 import {PlayerCards} from '../hooks/PlayerCards.js'
 import {CardsPlayed} from "../hooks/CardsPlayed";
 import {BlackCard} from "../hooks/BlackCard";
+import {Settings} from "../hooks/Settings";
 
 let nickname = "unknown";
 
@@ -74,14 +75,16 @@ const Homepage = () => {
 
   return (
       <div id="wrapper">
+        <Settings>
           <Navbar />
             <BlackCard>
               <Main  />
               <PlayerCards>
-                <Cards  />
+                <Cards />
               </PlayerCards>
-          </BlackCard>
+            </BlackCard>
           <Info />
+        </Settings>
       </div>
   );
 }
